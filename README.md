@@ -1,4 +1,4 @@
-Apache SkyWalking | [中文](README_ZH.md)
+Apache SkyWalking
 ==========
 
 <img src="https://skywalkingtest.github.io/page-resources/3.0/skywalking.png" alt="Sky Walking logo" height="90px" align="right" />
@@ -40,6 +40,12 @@ including:
 - Modern and cool Web UI
 - Log integration
 - Alarm for slow or unstable(low SLA) application, instance and service 
+- [**Incubating**] Support accepting other tracer data formats.
+  - Zipkin JSON, Thrift, Protobuf v1 and v2 formats, powered by [OpenZipkin](https://github.com/openzipkin/zipkin) libs
+  - Jaeger in [Zipkin Thrift or JSON v1/v2 formats](https://github.com/jaegertracing/jaeger#backwards-compatibility-with-zipkin)
+  
+# Announcement
+After SkyWalking 5.0.0-beta2 released, all core features have been provided. For 5 series, we are trying to make them stable from now. At the same time, we have already begun our works for 6 series, in branch `6.0`. It will be a long way to have the first alpha release for it. So if you want to take part in the challengeable works, welcome, but don't consider to use that. Please read the [6.0 documents](https://github.com/apache/incubator-skywalking/blob/6.0/docs/README.md) first.
 
 # Document
 - [Documents in English](docs/README.md)
@@ -53,19 +59,17 @@ This project adheres to the Contributor Covenant [code of conduct](CODE_OF_CONDU
 
 # Live Demo
 - Host in Beijing. [goto](http://49.4.12.44:8080/)
-- Host in HK. [goto](http://159.138.0.181:8080/)
+  - Username: admin
+  - Password: admin
 
 # Screenshot
-<img src="https://skywalkingtest.github.io/page-resources/5.0.0-beta/Dashboard.png"/>
+<img src="https://skywalkingtest.github.io/page-resources/5.0.0-beta2/Dashboard.png"/>
 
 
 - [See all screenshots](/docs/Screenshots.md)
 
-# Test reports
-- Automatic integration test reports
-  - [Java Agent test report](https://github.com/SkywalkingTest/agent-integration-test-report)
-- Performance test reports
-  - [Java Agent test report](https://skywalkingtest.github.io/Agent-Benchmarks/)
+# Compiling project
+Follow this [document](https://github.com/apache/incubator-skywalking/blob/master/docs/en/How-to-build.md).
 
 # Contact Us
 * Submit an issue
@@ -74,7 +78,7 @@ This project adheres to the Contributor Covenant [code of conduct](CODE_OF_CONDU
 * QQ Group: 392443393
 
 # Users
-<img src="https://skywalkingtest.github.io/page-resources/users/users-2018-04-18.png"/>
+<img src="https://skywalkingtest.github.io/page-resources/users/users-2018-06-07.png"/>
 
 [Submit new user case to us.](https://github.com/apache/incubator-skywalking/issues/443)
 

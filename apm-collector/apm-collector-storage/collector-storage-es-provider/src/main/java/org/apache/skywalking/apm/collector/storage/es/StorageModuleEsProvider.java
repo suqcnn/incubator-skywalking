@@ -48,7 +48,7 @@ import org.apache.skywalking.apm.collector.storage.dao.rtd.*;
 import org.apache.skywalking.apm.collector.storage.dao.smp.*;
 import org.apache.skywalking.apm.collector.storage.dao.srmp.*;
 import org.apache.skywalking.apm.collector.storage.dao.ui.*;
-import org.apache.skywalking.apm.collector.storage.es.base.dao.BatchEsDAO;
+import org.apache.skywalking.apm.collector.storage.es.base.dao.BatchProcessEsDAO;
 import org.apache.skywalking.apm.collector.storage.es.base.define.ElasticSearchStorageInstaller;
 import org.apache.skywalking.apm.collector.storage.es.dao.*;
 import org.apache.skywalking.apm.collector.storage.es.dao.acp.*;
@@ -69,6 +69,8 @@ import org.apache.skywalking.apm.collector.storage.es.dao.rtd.*;
 import org.apache.skywalking.apm.collector.storage.es.dao.smp.*;
 import org.apache.skywalking.apm.collector.storage.es.dao.srmp.*;
 import org.apache.skywalking.apm.collector.storage.es.dao.ui.*;
+import org.apache.skywalking.apm.collector.storage.es.ttl.TTLConfigService;
+import org.apache.skywalking.apm.collector.storage.ttl.ITTLConfigService;
 
 /**
  * @author peng-yongsheng
@@ -102,7 +104,9 @@ public class StorageModuleEsProvider extends ModuleProvider {
     @Override public void prepare() throws ServiceNotProvidedException {
         elasticSearchClient = new ElasticSearchClient(config.getClusterName(), config.getClusterTransportSniffer(), config.getClusterNodes(), nameSpace);
 
-        this.registerServiceImplementation(IBatchDAO.class, new BatchEsDAO(elasticSearchClient));
+        this.registerServiceImplementation(ITTLConfigService.class, new TTLConfigService(config));
+        this.registerServiceImplementation(IBatchDAO.class, new BatchProcessEsDAO(elasticSearchClient, config.getBulkActions(), config.getBulkSize(), config.getFlushInterval(), config.getConcurrentRequests()));
+
         registerCacheDAO();
         registerRegisterDAO();
         registerPersistenceDAO();
@@ -132,12 +136,7 @@ public class StorageModuleEsProvider extends ModuleProvider {
         ModuleListenerService moduleListenerService = getManager().find(ClusterModule.NAME).getService(ModuleListenerService.class);
         moduleListenerService.addListener(namingListener);
 
-        deleteTimer = new DataTTLKeeperTimer(getManager(), namingListener, esRegistration.buildValue().getHostPort());
-        deleteTimer.setTraceDataTTL(config.getTraceDataTTL());
-        deleteTimer.setMinuteMetricDataTTL(config.getMinuteMetricDataTTL());
-        deleteTimer.setHourMetricDataTTL(config.getHourMetricDataTTL());
-        deleteTimer.setDayMetricDataTTL(config.getDayMetricDataTTL());
-        deleteTimer.setMonthMetricDataTTL(config.getMonthMetricDataTTL());
+        deleteTimer = new DataTTLKeeperTimer(getManager(), namingListener, esRegistration.buildValue().getHostPort(), config);
     }
 
     @Override
@@ -241,6 +240,7 @@ public class StorageModuleEsProvider extends ModuleProvider {
         this.registerServiceImplementation(IInstanceReferenceMonthMetricPersistenceDAO.class, new InstanceReferenceMonthMetricEsPersistenceDAO(elasticSearchClient));
 
         this.registerServiceImplementation(IInstanceHeartBeatPersistenceDAO.class, new InstanceHeartBeatEsPersistenceDAO(elasticSearchClient));
+        this.registerServiceImplementation(IServiceNameHeartBeatPersistenceDAO.class, new ServiceNameHeartBeatEsPersistenceDAO(elasticSearchClient));
     }
 
     private void registerUiDAO() throws ServiceNotProvidedException {
